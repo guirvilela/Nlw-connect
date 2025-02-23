@@ -1,11 +1,30 @@
-import React from "react";
+import {
+  getRanking,
+  getSubscriberInviteClicks,
+  getSubscriberInviteCount,
+  getSubscriberRankingPosition,
+} from "@/http/api-fake";
 
-export function useInvitePageController() {
-  const inviteLink = "https://invite-devstage.com/123124124";
+interface InvitePageControllerProps {
+  subscriptionId: string;
+}
 
-  const handleCopyLink = React.useCallback(() => {
-    navigator.clipboard.writeText(inviteLink);
-  }, []);
+export async function useInvitePageController({
+  subscriptionId,
+}: InvitePageControllerProps) {
+  const { ranking } = getRanking();
+  const subscriptions = getSubscriberInviteCount(subscriptionId);
+  const clicks = getSubscriberInviteClicks(subscriptionId);
+  const rankingPosition = getSubscriberRankingPosition(subscriptionId);
+  const inviteLink = `https://invite-devstage.com/invite/${subscriptionId}`;
 
-  return { handleCopyLink };
+  const sortedRanking = [...ranking].sort((a, b) => b.score - a.score);
+
+  return {
+    sortedRanking,
+    subscriptions,
+    clicks,
+    rankingPosition,
+    inviteLink,
+  };
 }

@@ -1,3 +1,5 @@
+import { subscribeToEvent } from "@/http/api-fake";
+import { useRouter } from "next/navigation";
 import React from "react";
 import z from "zod";
 import { useForm } from "../useForm";
@@ -10,6 +12,7 @@ const subscriptionSchema = z.object({
 type SubscriptionSchemaProps = z.infer<typeof subscriptionSchema>;
 
 export function useSubscriptionPageController() {
+  const router = useRouter();
   const subscriptionForm = useForm<SubscriptionSchemaProps>(
     {
       name: "",
@@ -18,9 +21,11 @@ export function useSubscriptionPageController() {
     subscriptionSchema
   );
 
-  const handleSubmitSubscription = React.useCallback(() => {}, [
-    subscriptionForm,
-  ]);
+  const handleSubmitSubscription = React.useCallback(() => {
+    const { subscriberId } = subscribeToEvent();
+
+    router.push(`/invite/${subscriberId}`);
+  }, [subscriptionForm]);
 
   return { subscriptionForm, handleSubmitSubscription };
 }
